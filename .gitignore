@@ -1,0 +1,17 @@
+# Virtual Environment
+env/
+venv/
+ENV/
+
+# Python caching files (temporary files Python creates as it runs)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Databases (Local development database)
+db.sqlite3
+
+# OS generated files
+.DS_Store
+Thumbs.db
