@@ -10,7 +10,7 @@ class Question(models.Model):
     def was_published_recently(self):
         return self.pub_date >= timezone.now() - datetime.timedelta(days= 1)
 
-    def __str__(self):
+    def __str__(self):     # mandatory 
         return self.question_text
 
 class Choice (models.Model):
