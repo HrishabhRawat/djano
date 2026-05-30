@@ -11,4 +11,8 @@ urlpatterns = [
     path("<int:pk>/results/" , views.ResultsView.as_view() , name="results"),
     # ex /polls/5/vote/
     path("<int:question_id>/vote/", views.vote, name="vote"),
+    # Url for editing a Question
+    path("<int:pk>/update/", views.QuestionUpdateView.as_view(), name= "question_update"),
+    # url for deleting a Question
+    path("<int:pk>/delete/", views.QuestionDeleteView.as_view(), name="question_delete"),
 ]

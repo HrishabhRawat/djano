@@ -6,6 +6,9 @@ from django.http import Http404
 from django.urls import reverse
 from .models import Choice, Question
 from django.utils import timezone
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic.edit import UpdateView, DeleteView
+from django.urls import reverse_lazy
 # Create your views here.
 
 # def index(request):
@@ -78,5 +81,22 @@ def vote(request, question_id):
         selected_choice.save()
         return HttpResponseRedirect(reverse("polls:results", args=(question_id,)))
 
+class QuestionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Question
+    fields = ["question_text"]
+    template_name = "polls/question_form.html"
 
+    def test_func(self):
+        # this is authorization check
+        question = self.get_object()
+        return self.request.user == question.author
+    
+class QuestionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Question
+    success_url = reverse_lazy("polls:index")
+    template_name = "polls/question_confirm_delete.html"
 
+    def test_func(self):
+        # this is authorization check
+        question = self.get_object()
+        return self.request.user == question.author
