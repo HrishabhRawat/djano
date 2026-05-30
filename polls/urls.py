@@ -15,4 +15,6 @@ urlpatterns = [
     path("<int:pk>/update/", views.QuestionUpdateView.as_view(), name= "question_update"),
     # url for deleting a Question
     path("<int:pk>/delete/", views.QuestionDeleteView.as_view(), name="question_delete"),
+    # url for creating a new question with choices
+    path("create/", views.question_create_view, name= "question_create"),
 ]

@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="{% static 'polls/style.css' %}">
   </head>
   <body>
+    <h1>Polls</h1>
+    {% if user.is_authenticated %}
+      <p>welcome, {{ user.username }}! <a href= {% url 'polls:question_create' %}><strong>[+Create New Poll]</strong></a></p>
+    {% else %}
+      <p><a href = {% url 'polls:login' %}>Login</a>To vote or Create a Vote</p>
+    {% endif %}
     {% if latest_question_list %}
         <ul>
         {% for question in latest_question_list %}

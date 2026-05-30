@@ -1,5 +1,5 @@
 from django.db.models import F
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views import generic
 from django.http import Http404
@@ -9,6 +9,8 @@ from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import UpdateView, DeleteView
 from django.urls import reverse_lazy
+from .forms import QuestionForm , ChoiceFormSet
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 # def index(request):
@@ -101,3 +103,33 @@ class QuestionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         # this is authorization check
         question = self.get_object()
         return self.request.user == question.author
+
+# Creating a view 
+@login_required
+def question_create_view(request):
+    if request.method == "POST":
+        form = QuestionForm(request.POST)
+        formset = ChoiceFormSet(request.POST)
+        # Ensure both the Question text and all Choices are valid
+        if form.is_valid() and formset.is_valid():
+            # Save the question but dont commit it to the database yet
+            question = form.save(commit=False)
+            # Automate the background fields (Author and publication details)
+            question.autor = request.user
+            question.pub_date = timezone.now()
+            question.save()   # Save the question to generate the id
+
+            # pass the saved question id into the formset so the choices link to it
+            formset.instance = question
+            question.save()   # save all changes to the data base
+
+            return redirect("polls:index")
+    else:
+        # if accessing via a get method, display empty forms
+        form = QuestionForm()
+        formset = ChoiceFormSet()
+    return render(
+        request,
+        "polls/question_create.html",
+        {"form":form, "formset":formset}
+    )

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create a New Poll</title>
+</head>
+<body>
+    <h1>Create a New Poll</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        <h3>Question</h3>
+        {{ form.as_p }}
+        <h3>Choices</h3>
+        {{ formset.management_form }}
+        <ul>
+            {% for choice_form in formset %}
+                <li>{{ choice_form.as_p }}</li>
+            {% endfor %}
+        </ul>
+        <button type= "submit">Create Poll</button>
+
+    </form>
+    
+    <br>
+    <a href="{% url 'polls:index' %}">Cancel and Back to List</a>
+</body>
+</html>
