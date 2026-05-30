@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Question</title>
+</head>
+<body>
+    <h1>Edit Question</h1>
+    <form  method= "post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type= "submit">Save Changes</button>
+    </form>
+    <a href ="{% url "polls:index"%}">Cancel</a>
+</body>
+</html>

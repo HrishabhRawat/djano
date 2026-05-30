@@ -84,6 +84,7 @@ def vote(request, question_id):
 class QuestionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Question
     fields = ["question_text"]
+    success_url = reverse_lazy("polls:index")
     template_name = "polls/question_form.html"
 
     def test_func(self):
