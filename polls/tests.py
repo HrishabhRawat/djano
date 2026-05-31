@@ -2,9 +2,11 @@ import datetime
 from django.test import TestCase
 from django.utils import timezone
 from django.urls import reverse
+from django.contrib.auth.models import User
+from .models import Question, Choice
 # Create your tests here.
 
-from .models import Question
+
 
 class QuestionModelTests(TestCase):
     def test_was_published_recently_with_future_question(self):
@@ -108,6 +110,51 @@ class QuestionDetailViewTests(TestCase):
         response = self.client.get(url)
         self.assertContains(response, past_question.question_text)
 
+# Creating a test for a new create_question_view
+class QuestionCreateViewTests(TestCase):
+    def setUp(self):
+        # creating a user and loging them before every test cases
+        self.username = "testuser"
+        self.password = "password123"
+        self.user = User.objects.create_user(username = self.username, password=self.password)
+        self.client.login(username = self.username, password = self.password)
+        self.create_url = reverse("polls:question_create")
 
+    def test_create_question_with_choice_succeeds(self):
+        # submitting a valid question form and choice formset successfully create the record in the database 
+        # and redirect to the index
 
+        form_data = {
+            "question_text": "What is the favourite framework",
+            "choice_set-TOTAL_FORMS": "3",
+            "choice_set-INITIAL_FORMS": "0",
+            "choice_set-MIN_NUM_FORMS": "0",
+            "choice_set-MAX_NUM_FORMS": "1000",
+            
+            
+            "choice_set-0-choice_text": "Django",
+            "choice_set-1-choice_text": "React",
+            "choice_set-2-choice_text": "FasetAPI", 
+        }
+        # simulating hitting the create poll button
+        response = self.client.post(self.create_url, data = form_data)
+        if response.status_code == 200:
+            print("\n!!!FORM ERRORS:", response.context['form'].errors)
+            print("!!! FORMSET ERRORS:", response.context['formset'].errors, "\n")
+        # check that it is successfully redirected back to the index page (HTTP303)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("polls:index"))
+
+        # Assert the question was saved to the database
+        self.assertEqual(Question.objects.count(), 1)
+        new_question = Question.objects.first()
+        self.assertEqual(new_question.question_text, "What is the favourite framework")
+        self.assertEqual(new_question.author, self.user)
+
+        # Assert that all the 3 choices were linked to that question in the database
+        self.assertEqual(Choice.objects.count(), 3)
+        choices = new_question.choice_set.all()
+        self.assertEqual(choices[0].choice_text, "Django")
+        self.assertEqual(choices[1].choice_text, "React")
+        self.assertEqual(choices[2].choice_text, "FasetAPI")
 

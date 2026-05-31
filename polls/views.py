@@ -115,13 +115,14 @@ def question_create_view(request):
             # Save the question but dont commit it to the database yet
             question = form.save(commit=False)
             # Automate the background fields (Author and publication details)
-            question.autor = request.user
+            question.author = request.user
             question.pub_date = timezone.now()
             question.save()   # Save the question to generate the id
 
             # pass the saved question id into the formset so the choices link to it
             formset.instance = question
-            question.save()   # save all changes to the data base
+            formset.save()
+            # question.save()   # save all changes to the data base
 
             return redirect("polls:index")
     else:
