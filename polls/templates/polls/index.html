@@ -11,7 +11,7 @@
     {% if user.is_authenticated %}
       <p>welcome, {{ user.username }}! <a href= {% url 'polls:question_create' %}><strong>[+Create New Poll]</strong></a></p>
     {% else %}
-      <p><a href = {% url 'polls:login' %}>Login</a>To vote or Create a Vote</p>
+      <p><a href = {% url 'login' %}>Login</a>To vote or Create a Vote</p>
     {% endif %}
     {% if latest_question_list %}
         <ul>
