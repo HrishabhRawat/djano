@@ -34,3 +34,18 @@ class Choice (models.Model):
 
     def __str__(self):
         return self.choice_text
+    
+# creating a model for the vote this model will make sure that the user can cast only one vote per question
+class Vote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'question'], name='unique_user_vote_per_question')
+        ]
+
+    def __str__(self):
+        return f"{self.user.username} voted for {self.choice.choice_text}"
