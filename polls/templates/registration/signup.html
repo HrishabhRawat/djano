@@ -5,13 +5,13 @@
     <title>My test page</title>
   </head>
   <body>
-    <h2>Login to Vote</h2>
-    <form method = "post">
+    <h2>Create an Account</h2>
+    <form method= "post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Login</button>
+        <button type="submit">Sign Up</button>
 
     </form>
-    <p>Don't have an account yet?<a href= "{% url 'signup' %}">Sign Up Here</a></p>
+    <p>Already have an account<a href="{% url 'login'%}">Login here</a></p>
   </body>
 </html> 
