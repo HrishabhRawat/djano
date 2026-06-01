@@ -59,6 +59,22 @@ class DetailView(generic.DetailView):
     def get_queryset(self):
         """ Excludes any questions that aren't published yet """
         return Question.objects.filter(pub_date__lte = timezone.now())
+    
+    def get_context_data(self, **kwargs):
+        # call the super model to get the default context (contains the question object)
+        context = super().get_context_data(**kwargs)
+        # check if the logged in user has already voted on the question 
+        user_has_voted = False
+        if self.request.user.is_authenticated:
+            user_has_voted = Vote.objects.filter(
+                user= self.request.user,
+                question = self.object
+            ).exists()
+        context["user_has_voted"] = user_has_voted
+        return context
+    
+
+        
 
 class ResultsView(generic.DetailView):
     model = Question
