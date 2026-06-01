@@ -11,6 +11,7 @@ from django.views.generic.edit import UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .forms import QuestionForm , ChoiceFormSet
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
 # Create your views here.
 
 # def index(request):
@@ -164,3 +165,8 @@ def question_create_view(request):
         "polls/question_create.html",
         {"form":form, "formset":formset}
     )
+
+class SignUpView(generic.CreateView):
+    form_class = UserCreationForm
+    success_url = reverse_lazy("login")    # redirects to login page after successfull registration
+    template_name = "registration/signup.html"

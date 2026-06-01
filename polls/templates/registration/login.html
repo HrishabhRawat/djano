@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>My test page</title>
+  </head>
+  <body>
+    <h2>Login to Vote</h2>
+    <form method = "post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Login</button>
+
+    </form>
+    <p>Don't have an account yet?<a href= {% url 'signup' %}>Sign Up Here</a></p>
+  </body>
+</html> 
