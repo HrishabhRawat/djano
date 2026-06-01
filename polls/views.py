@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views import generic
 from django.http import Http404
 from django.urls import reverse
-from .models import Choice, Question
+from .models import Choice, Question, Vote
 from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import UpdateView, DeleteView
@@ -64,7 +64,7 @@ class ResultsView(generic.DetailView):
     model = Question
     template_name = "polls/results.html"
 
-
+@login_required
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     try:
@@ -79,9 +79,23 @@ def vote(request, question_id):
             },
         )
     else:
-        selected_choice.votes = F("votes") + 1
-        selected_choice.save()
-        return HttpResponseRedirect(reverse("polls:results", args=(question_id,)))
+        # check if vote record already exists for this user and question
+        already_voted = Vote.objects.filter(user = request.user, question = question).exists()
+        if already_voted:
+            return render(
+                request, 
+                "polls/detail.html",
+                {
+                    "question":Question,
+                    "error_message":"You already cast your vote for this question"
+                }
+            )
+        
+        # save the new vote Transaction
+        Vote.objects.create(user = request.user, question= question, choice= selected_choice)
+
+        return HttpResponseRedirect(reverse("polls:results", args= [question_id]))
+
 
 class QuestionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Question
